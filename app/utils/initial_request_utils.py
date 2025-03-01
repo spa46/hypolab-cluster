@@ -5,7 +5,7 @@ import os
 from .uuid_utils import generate_uuid, load_uuid, save_uuid
 
 def load_config(config_file):
-    default_config = {"server_url": "http://abc.com", "uuid": ""}
+    default_config = {"server_url": "http://localhost:8000", "uuid": ""}
 
     if not os.path.exists(config_file):
         with open(config_file, 'w') as f:
@@ -35,7 +35,7 @@ def register_device(config_file):
     device_uuid = config.get('uuid')
 
     try:
-        response = requests.post(f'{server_url}/init-cluster', json={'uuid': device_uuid})
+        response = requests.post(f'{server_url}/api/hypo/init-cluster', json={'uuid': device_uuid})
         if response.status_code == 200:
             print("Registration successful")
         else:
