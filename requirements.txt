@@ -2,3 +2,4 @@ flask
 confluent_kafka
 flask-socketio
 requests
+pyyaml

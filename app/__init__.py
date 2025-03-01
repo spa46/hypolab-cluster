@@ -2,7 +2,7 @@ from flask import Flask
 from flask_socketio import SocketIO
 from .utils.initial_request_utils import register_device
 
-CONFIG_FILE = 'config.json'
+CONFIG_FILE = 'config.yml'
 
 socketio = SocketIO()
 
