@@ -1,12 +1,11 @@
 import logging
 import logging.config
-import yaml
 from flask import Flask
 from flask_socketio import SocketIO
-from .utils.initial_request_utils import register_device
+from dotenv import load_dotenv
 import os
+import yaml
 
-CONFIG_FILE = 'config.yml'
 LOCK_FILE = '.registration.lock'
 LOGGING_CONFIG_FILE = 'logging_config.yml'
 
@@ -14,6 +13,9 @@ socketio = SocketIO()
 
 def create_app():
     app = Flask(__name__)
+
+    # Load environment variables from .env file
+    load_dotenv()
 
     # Load logging configuration
     with open(LOGGING_CONFIG_FILE, 'r') as f:
@@ -24,20 +26,26 @@ def create_app():
 
     # Check for the existence of the lock file
     if not os.path.exists(LOCK_FILE):
-        register_device(CONFIG_FILE)
-        # Create the lock file after registration
-        with open(LOCK_FILE, 'w') as f:
-            f.write('')
-        logger.info('Device registered and lock file created.')
+        # Registration Mode (Initialization Mode)
+        from .routes import registration_bp
+        app.register_blueprint(registration_bp)
+
+        logger.info('Registration Mode Entered.')
+
+        register_device()
+
+        return app
     else:
-        logger.info('Cluster is already registered!')
+        # Cluster Mode
+        from .routes import cluster_bp
+        app.register_blueprint(cluster_bp)
 
-    from .routes import main_bp
-    app.register_blueprint(main_bp)
+        logger.info('Cluster Mode Entered.')
 
-    socketio.init_app(app)
+        socketio.init_app(app)
 
-    return app
+        return app
+
 
 if __name__ == '__main__':
     app = create_app()
