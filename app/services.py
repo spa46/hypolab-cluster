@@ -1,4 +1,8 @@
 from app.utils.kafka_utils import get_kafka_producer, get_kafka_consumer, send_message, consume_messages
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def register_hypo_cluster(data):
     producer = get_kafka_producer()

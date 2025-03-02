@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from .services import register_hypo_cluster, get_hypo_cluster_status, control_hypo_cluster, monitor_hypo_cluster
+import logging
 
+logger = logging.getLogger(__name__)
 main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/register', methods=['POST'])
