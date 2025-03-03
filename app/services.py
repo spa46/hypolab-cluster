@@ -6,22 +6,22 @@ logger = logging.getLogger(__name__)
 
 bootstrap_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 
-def register_hypo_cluster(data):
-    producer = get_kafka_producer(bootstrap_servers)
-    send_message(producer, 'register_hypo_cluster', data['id'])
+def register_cluster(data):
+    # Create the lock file after registration
+    with open(LOCK_FILE, 'w') as f:
+        f.write('')
+    logger.info('Device registered and lock file created.')
+    # producer = get_kafka_producer(bootstrap_servers)
+    # send_message(producer, 'register_hypo_cluster', data['id'])
     return {'message': 'Hypo cluster registered successfully'}
 
-def get_hypo_cluster_status():
-    consumer = get_kafka_consumer(bootstrap_servers, 'earliest', 'status_hypo_cluster')
-    messages = consume_messages(consumer)
-    return {'status': messages}
+def start_kafka_consumer():
+    consumer = get_kafka_consumer(bootstrap_servers, 'earliest', 'register')
+    topic_callbacks = {
+        'register': register_cluster,
+        # Add other topics and their corresponding callbacks here
+    }
+    consume_messages(consumer, topic_callbacks)
 
-def control_hypo_cluster(data):
-    producer = get_kafka_producer(bootstrap_servers)
-    send_message(producer, 'control_hypo_cluster', data['id'])
-    return {'message': 'Hypo cluster control command sent'}
-
-def monitor_hypo_cluster():
-    consumer = get_kafka_consumer(bootstrap_servers, 'earliest', 'monitor_hypo_cluster')
-    messages = consume_messages(consumer)
-    return {'monitor': messages}
+# Call start_kafka_consumer to start consuming messages
+start_kafka_consumer()

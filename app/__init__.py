@@ -36,11 +36,7 @@ def create_app():
     # Check for the existence of the lock file
     if not os.path.exists(LOCK_FILE):
         # Registration Mode (Initialization Mode)
-        from .routes import registration_bp
-        app.register_blueprint(registration_bp)
-
         logger.info('Registration Mode Entered.')
-
         register_device()
 
         producer = get_kafka_producer(bootstrap_servers)
@@ -49,8 +45,8 @@ def create_app():
         return app
     else:
         # Cluster Mode
-        from .routes import cluster_bp
-        app.register_blueprint(cluster_bp)
+        # from .routes import cluster_bp
+        # app.register_blueprint(cluster_bp)
 
         logger.info('Cluster Mode Entered.')
 
