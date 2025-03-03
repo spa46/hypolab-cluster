@@ -26,10 +26,6 @@ def registration():
     # logger.info('Device registered and lock file created.')
 
     # Print countdown and restart server
-    for i in range(5, 0, -1):
-        logger.info(f"Server restarting in {i} seconds...")
-        time.sleep(1)
 
-    os.execv(__file__, ['python'] + sys.argv)
 
     return 'Registration successful!'
