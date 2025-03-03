@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import os
 import yaml
 
+from app.utils.initial_request_utils import register_device
+
 LOCK_FILE = '.registration.lock'
 LOGGING_CONFIG_FILE = 'logging_config.yml'
 

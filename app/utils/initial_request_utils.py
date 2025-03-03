@@ -2,6 +2,7 @@ import logging
 import requests
 import sys
 import os
+from app.utils.uuid_utils import generate_uuid
 
 logger = logging.getLogger('app')
 
@@ -12,15 +13,24 @@ def load_config():
     }
     return config
 
+def save_to_dotenv(key, value):
+    with open('.env', 'a') as f:
+        f.write(f'\n{key}={value}')
+
 def register_device():
     config = load_config()
     server_url = config.get('server_url')
     device_uuid = config.get('uuid')
 
+    if not device_uuid:
+        device_uuid = generate_uuid()
+        logger.info(f"Generated new UUID: {device_uuid}")
+        save_to_dotenv('UUID', device_uuid)
+
     try:
         response = requests.post(f'{server_url}/api/clusters/init-cluster/', json={'uuid': device_uuid})
         if response.status_code == 200:
-            logger.info("Registration request sent ")
+            logger.info("Registration request sent")
         else:
             logger.error(f"Registration request failed with status code: {response.status_code}")
             sys.exit(1)
