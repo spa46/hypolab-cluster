@@ -11,7 +11,8 @@ logger = logging.getLogger('app')
 def load_config():
     config = {
         "server_url": os.getenv('SERVER_URL', 'http://localhost:8000'),
-        "uuid": os.getenv('UUID', '')
+        "uuid": os.getenv('UUID', ''),
+        "group_id": os.getenv('KAFKA_GROUP_ID', 'mygroup')  # Default group_id
     }
     return config
 
@@ -20,7 +21,8 @@ def save_to_dotenv(key, value):
         f.write(f'\n{key}={value}')
 
 def restart_server():
-    for i in range(5, 0, -1):
+    os.environ['FLASK_APP'] = 'app:create_app'
+    for i in range(10, 0, -1):
         logger.info(f"Server restarting in {i} seconds...")
         time.sleep(1)
 
@@ -30,11 +32,16 @@ def register_device():
     config = load_config()
     server_url = config.get('server_url')
     device_uuid = config.get('uuid')
+    group_id = config.get('group_id')
 
     if not device_uuid:
         device_uuid = generate_uuid()
         logger.info(f"Generated new UUID: {device_uuid}")
         save_to_dotenv('UUID', device_uuid)
+        save_to_dotenv('KAFKA_GROUP_ID', group_id)  # Save group_id to .env
+        # temporary
+        save_to_dotenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')  # Save bootstrap_servers to .env
+        ####
         restart_server()
 
         try:
