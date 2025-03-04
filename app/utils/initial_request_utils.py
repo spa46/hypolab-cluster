@@ -35,17 +35,17 @@ def register_device():
     group_id = config.get('group_id')
 
     if not device_uuid:
-        device_uuid = generate_uuid()
-        logger.info(f"Generated new UUID: {device_uuid}")
-        save_to_dotenv('UUID', device_uuid)
-        save_to_dotenv('KAFKA_GROUP_ID', group_id)  # Save group_id to .env
-        # temporary
-        save_to_dotenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')  # Save bootstrap_servers to .env
+        # device_uuid = generate_uuid()
+        # logger.info(f"Generated new UUID: {device_uuid}")
+        # save_to_dotenv('UUID', device_uuid)
+        # save_to_dotenv('KAFKA_GROUP_ID', group_id)  # Save group_id to .env
+        # # temporary
+        # save_to_dotenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')  # Save bootstrap_servers to .env
         ####
-        restart_server()
+        # restart_server()
 
         try:
-            response = requests.post(f'{server_url}/api/clusters/init-cluster/', json={'uuid': device_uuid})
+            response = requests.post(f'{server_url}/api/clusters/init-cluster/')
             if response.status_code == 200:
                 logger.info("Registration request sent")
             else:
