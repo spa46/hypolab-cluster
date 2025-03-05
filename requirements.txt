@@ -1,5 +1,9 @@
 flask
-confluent_kafka
 flask-socketio
 requests
 python-dotenv
+PyYaml
+
+paho-mqtt
+flask_mqtt
+# confluent_kafka

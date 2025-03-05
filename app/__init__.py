@@ -1,64 +1,64 @@
+import os
+import yaml
 import logging
 import logging.config
 from flask import Flask
-from flask_socketio import SocketIO
 from dotenv import load_dotenv
-import os
-import yaml
 
-from app.utils.initial_request_utils import register_device
-from app.utils.kafka_utils.producer import get_kafka_producer
-from app.utils.kafka_utils.consumer import get_kafka_consumer
+from app.services import init_cluster
+from app.mqtt import mqtt, initialize_mqtt
+
+
 
 LOCK_FILE = '.registration.lock'
 LOGGING_CONFIG_FILE = 'logging_config.yml'
 
-socketio = SocketIO()
 
-def create_app():
-    app = Flask(__name__)
+def run_registration_mode():
+    # Registration Mode (Initialization Mode)
+    logger.info('Registration Mode Entered.')
+    init_cluster()
 
-    # Load environment variables from .env file
-    load_dotenv()
 
+def run_cluster_mode():
+    pass
+
+
+def initialize_dotenv():
+    dotenv_path = '.env'
+
+    # Create the .env file if it does not exist
+    if not os.path.exists(dotenv_path):
+        with open(dotenv_path, 'w') as f:
+            f.write('')
+
+def initialize_logging():
     # Load logging configuration
     with open(LOGGING_CONFIG_FILE, 'r') as f:
         config = yaml.safe_load(f)
         logging.config.dictConfig(config)
 
+
+def create_app():
+    app = Flask(__name__)
+
+    initialize_dotenv()
+    load_dotenv()
+    initialize_logging()
+    # initialize_mqtt(app)
+
+    global logger
     logger = logging.getLogger('app')
 
-    # Initialize Kafka producer and consumer
-    bootstrap_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
-    auto_offset_reset = os.getenv("KAFKA_AUTO_OFFSET_RESET", "earliest")
-    topic = os.getenv("KAFKA_TOPIC", "mytopic/init-cluster")
 
     # Check for the existence of the lock file
     if not os.path.exists(LOCK_FILE):
-        # Registration Mode (Initialization Mode)
-        logger.info('Registration Mode Entered.')
-        register_device()
-
-        producer = get_kafka_producer(bootstrap_servers)
-        consumer = get_kafka_consumer(bootstrap_servers, auto_offset_reset, topic)
-
-        return app
+        run_registration_mode()
     else:
-        # Cluster Mode
-        # from .routes import cluster_bp
-        # app.register_blueprint(cluster_bp)
+        run_cluster_mode()
 
-        logger.info('Cluster Mode Entered.')
-
-        producer = get_kafka_producer(bootstrap_servers)
-        consumer = get_kafka_consumer(bootstrap_servers, auto_offset_reset, topic)
-
-        socketio.init_app(app)
-
-        return app
-
+    return app
 
 if __name__ == '__main__':
-    app, producer, consumer = create_app()
-    if app:
-        socketio.run(app, debug=True)
+    app = create_app()
+    app.run(debug=True)
