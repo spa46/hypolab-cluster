@@ -9,7 +9,6 @@ from app.services import init_cluster
 from app.mqtt import mqtt, initialize_mqtt
 
 
-
 LOCK_FILE = '.registration.lock'
 LOGGING_CONFIG_FILE = 'logging_config.yml'
 
@@ -17,10 +16,11 @@ LOGGING_CONFIG_FILE = 'logging_config.yml'
 def run_registration_mode():
     # Registration Mode (Initialization Mode)
     logger.info('Registration Mode Entered.')
-    init_cluster()
+    init_cluster(LOCK_FILE)
 
 
 def run_cluster_mode():
+    logger.info('Cluster Mode Entered.')
     pass
 
 
@@ -30,7 +30,7 @@ def initialize_dotenv():
     # Create the .env file if it does not exist
     if not os.path.exists(dotenv_path):
         with open(dotenv_path, 'w') as f:
-            f.write('')
+            pass
 
 def initialize_logging():
     # Load logging configuration
