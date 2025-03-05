@@ -44,9 +44,11 @@ def init_cluster(lock_file):
     try:
         if not topic:
             response = requests.post(f'{url}/api/clusters/init-cluster/')
+            logger.info("Registration request sent")
         else:
             response = requests.post(f'{url}/api/clusters/init-cluster/', json={'id': topic})
-        logger.info("Registration request sent")
+            logger.info("Registration already registered")
+
         if response.status_code == 200:
             logger.info("Registration Successful.")
             utils.save_to_dotenv('topic', response.json()['id'])
