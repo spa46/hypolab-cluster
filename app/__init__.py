@@ -42,6 +42,11 @@ def initialize_logging():
 def create_app():
     app = Flask(__name__)
 
+    ## TEST ###################################
+    from app.mock_config import set_mock_config
+    set_mock_config()  # Set mock configurations
+    ###########################################
+
     initialize_dotenv()
     load_dotenv()
     initialize_logging()
