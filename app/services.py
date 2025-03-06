@@ -3,35 +3,26 @@ import sys
 import logging
 import requests
 
-from flask import current_app
 from dotenv import load_dotenv
 
 from app.utils import utils
 from app.mqtt import mqtt
+# from app.mock_config import mqtt
 
 
 logger = logging.getLogger(__name__)
 
-current_topic = None
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
     topic = os.getenv('topic')
-    logger.info(f"Connected with result code {rc}")
+    logger.info(f"Connected to MQTT SUB TOPIC: {topic}")
     mqtt.subscribe(topic)
 
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
     logger.info(f"Received message: {message.payload.decode()} on topic {message.topic}")
-
-
-# def change_subscription(new_topic):
-#     global current_topic
-#     mqtt.unsubscribe(current_topic)
-#     current_topic = new_topic
-#     mqtt.subscribe(current_topic)
-#     logger.info(f"Subscribed to new topic: {current_topic}")
 
 
 def init_cluster(lock_file):
@@ -67,10 +58,13 @@ def init_cluster(lock_file):
 
     # Create the lock file after registration
 
-
     return {'message': 'Hypo cluster registered successfully'}
 
 
 def publish_message(topic, payload):
     mqtt.publish(topic, payload)
     logger.info(f"Published message: {payload} to topic: {topic}")
+
+
+def parse_message():
+    pass
