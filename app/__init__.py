@@ -5,8 +5,10 @@ import logging.config
 from flask import Flask
 from dotenv import load_dotenv
 
-from app.mqtt import mqtt, initialize_mqtt
-from app import services
+from app.utils.mqtt.mqtt import mqtt, initialize_mqtt
+
+from app.services.registration_service import init_cluster
+# from app.services.cluster_service import
 
 LOCK_FILE = '.registration.lock'
 LOGGING_CONFIG_FILE = 'logging_config.yml'
@@ -15,11 +17,12 @@ LOGGING_CONFIG_FILE = 'logging_config.yml'
 def run_registration_mode():
     # Registration Mode (Initialization Mode)
     logger.info('Registration Mode Entered.')
-    services.init_cluster(LOCK_FILE)
+    init_cluster(LOCK_FILE)
 
 
 def run_cluster_mode():
     logger.info('Cluster Mode Entered.')
+    # cluster_service
 
 
 def initialize_dotenv():

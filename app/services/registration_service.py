@@ -1,36 +1,19 @@
 import os
-import sys
+import  sys
 import logging
 import requests
-
 from dotenv import load_dotenv
 
 from app.utils import utils
-from app.mqtt import mqtt
-# from app.mock_config import mqtt
 
 
 logger = logging.getLogger(__name__)
 
 
-@mqtt.on_connect()
-def handle_connect(client, userdata, flags, rc):
-    topic = os.getenv('topic')
-    logger.info(f"Connected to MQTT SUB TOPIC: {topic}")
-    mqtt.subscribe(topic)
-
-
-@mqtt.on_message()
-def handle_mqtt_message(client, userdata, message):
-    logger.info(f"Received message: {message.payload.decode()} on topic {message.topic}")
-
-
 def init_cluster(lock_file):
-    utils.save_to_dotenv('server_url', 'http://localhost:8000')
-    utils.save_to_dotenv('topic', 'test')
     load_dotenv()
-    url = os.getenv('server_url')
-    topic = os.getenv('topic')
+    url = os.getenv('BACKEND_URL')
+    topic = os.getenv('TOPIC')
 
     try:
         if not topic:
@@ -59,12 +42,3 @@ def init_cluster(lock_file):
     # Create the lock file after registration
 
     return {'message': 'Hypo cluster registered successfully'}
-
-
-def publish_message(topic, payload):
-    mqtt.publish(topic, payload)
-    logger.info(f"Published message: {payload} to topic: {topic}")
-
-
-def parse_message():
-    pass
