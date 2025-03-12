@@ -5,14 +5,12 @@ import logging.config
 from flask import Flask
 from dotenv import load_dotenv
 
-from app.utils.mqtt.mqtt import mqtt, initialize_mqtt
-
 from app.services.registration_service import init_cluster
-# from app.services.cluster_service import
 
 LOCK_FILE = '.registration.lock'
 LOGGING_CONFIG_FILE = 'logging_config.yml'
 
+logger = logging.getLogger('app')
 
 def run_registration_mode():
     # Registration Mode (Initialization Mode)
@@ -23,6 +21,9 @@ def run_registration_mode():
 def run_cluster_mode():
     logger.info('Cluster Mode Entered.')
     # cluster_service
+
+
+
 
 
 def initialize_dotenv():
@@ -46,15 +47,13 @@ def create_app():
     initialize_dotenv()
     load_dotenv()
     initialize_logging()
-    mqtt = initialize_mqtt(app)
-
-    global logger
-    logger = logging.getLogger('app')
 
     # Check for the existence of the lock file
     if not os.path.exists(LOCK_FILE):
         run_registration_mode()
     else:
+        from app.utils.mqtt.mqtt import initialize_mqtt
+        mqtt = initialize_mqtt(app)
         run_cluster_mode()
 
     return app
